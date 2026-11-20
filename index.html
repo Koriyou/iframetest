@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>TouchPoints UAT preference center</title>
+    <style>
+      :root { color-scheme: light; font-family: system-ui, sans-serif; }
+      body { margin: 0; min-height: 100vh; background: #eef0f0; color: #273138; }
+      header { padding: 16px 20px; background: #24323a; color: #fff; font-size: 14px; }
+      main { width: min(1200px, 100%); margin: 0 auto; }
+      iframe { display: block; width: 100%; min-height: 900px; border: 0; background: #fff; }
+      .error { margin: 24px; padding: 16px; border: 1px solid #b42318; background: #fff; color: #b42318; }
+      .fallback { display: block; margin: 12px 24px 24px; color: #922a65; }
+    </style>
+  </head>
+  <body>
+    <header>UAT demonstration — TouchPoints email preferences</header>
+    <main id="app"></main>
+    <script>
+      (() => {
+        const params = new URLSearchParams(window.location.search);
+        const view = params.get('v');
+        const membership = params.get('m');
+        const token = params.get('t');
+        const app = document.getElementById('app');
+        const validView = view === 'categories' || view === 'all';
+        const validMembership = /^[0-9]{10,15}$/.test(membership || '');
+
+        if (!validView || !validMembership || !token) {
+          app.innerHTML = '<div class="error"><strong>Missing UAT link parameters.</strong><br>Use the approved demonstration URL supplied by the delivery team.</div>';
+          return;
+        }
+
+        const target = new URL('https://meedaf--uat.sandbox.my.site.com/lpvforcesite/PreferenceCenter');
+        target.search = new URLSearchParams({ v: view, m: membership, t: token });
+
+        const frame = document.createElement('iframe');
+        frame.title = 'TouchPoints email preferences';
+        frame.src = target.toString();
+        frame.referrerPolicy = 'no-referrer';
+        app.appendChild(frame);
+
+        const fallback = document.createElement('a');
+        fallback.className = 'fallback';
+        fallback.href = target.toString();
+        fallback.target = '_blank';
+        fallback.rel = 'noreferrer';
+        fallback.textContent = 'Open the UAT preference center directly';
+        app.appendChild(fallback);
+      })();
+    </script>
+  </body>
+</html>
